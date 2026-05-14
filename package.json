@@ -1,0 +1,13 @@
+{
+  "name": "playwright-google-screenshot",
+  "version": "1.0.0",
+  "description": "自動查詢 Google 搜尋並截圖，支援 AI Overview 與 AI Mode 偵測",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0"
+  }
+}

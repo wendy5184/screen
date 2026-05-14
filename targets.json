@@ -1,0 +1,20 @@
+[
+  {
+    "name": "住商",
+    "matchKeywords": ["hbhousing", "住商"],
+    "excludeKeywords": ["新聞", "news"],
+    "excludeDomains": ["udn", "ettoday", "chinatimes", "ltn", "yahoo", "ctee", "money.udn", "storm", "nownews", "tvbs", "setn", "ftv"]
+  },
+  {
+    "name": "大家",
+    "matchKeywords": ["great-home", "大家房屋", "大家"],
+    "excludeKeywords": ["新聞", "news"],
+    "excludeDomains": ["udn", "ettoday", "chinatimes", "ltn", "yahoo", "ctee", "money.udn", "storm", "nownews", "tvbs", "setn", "ftv"]
+  },
+  {
+    "name": "中信",
+    "matchKeywords": ["cthouse", "中信房屋"],
+    "excludeKeywords": ["新聞", "news"],
+    "excludeDomains": ["udn", "ettoday", "chinatimes", "ltn", "yahoo", "ctee", "money.udn", "storm", "nownews", "tvbs", "setn", "ftv"]
+  }
+]
