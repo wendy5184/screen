@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "semi": "node semi.js",
     "install-browsers": "npx playwright install chromium"
   },
   "dependencies": {
