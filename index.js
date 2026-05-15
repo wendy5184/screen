@@ -385,30 +385,11 @@ async function run() {
         );
       });
       if (isCaptcha) {
-        console.warn(`\n  ⚠️  偵測到 CAPTCHA 驗證碼！`);
-        console.warn(`  請在瀏覽器視窗完成驗證後，回到終端機按 Enter 繼續。`);
-        console.warn(`  （若直接按 Enter 略過，此關鍵字將記錄為驗證碼未完成）\n`);
-        await waitForEnter('  完成驗證後請按 Enter：');
-
-        // 確認驗證是否已通過
-        const stillCaptcha = await page.evaluate(() => {
-          return (
-            !!document.querySelector('form#captcha-form') ||
-            !!document.querySelector('#recaptcha') ||
-            document.title.toLowerCase().includes('unusual traffic') ||
-            document.body.innerText.includes('我不是機器人') ||
-            document.body.innerText.includes("I'm not a robot")
-          );
-        }).catch(() => true);
-
-        if (stillCaptcha) {
-          console.warn(`  驗證碼仍未通過，跳過此關鍵字。`);
-          csvStream.write(csvRow([timestamp, keyword, '', '', '', '', '', '', '', '', '', '', '', '', 'CAPTCHA 驗證未完成，跳過']));
-          await context.close();
-          continue;
-        }
-        console.log(`  驗證通過，繼續處理…\n`);
-        await page.waitForTimeout(1500);
+        console.warn(`\n  偵測到 Google 驗證，建議先停止，稍後再試。`);
+        csvStream.write(csvRow([timestamp, keyword, '', '', '', '', '', '', '', '', '', '', '', '', '偵測到 CAPTCHA，已停止本次執行']));
+        csvStream.end();
+        // 瀏覽器保持開啟，直接結束 process
+        process.exit(1);
       }
 
       // ════════════════════════════════════════
