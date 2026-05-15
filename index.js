@@ -3,6 +3,18 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
+
+// 暫停並等待使用者在終端機按 Enter
+function waitForEnter(prompt) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(prompt, () => {
+      rl.close();
+      resolve();
+    });
+  });
+}
 
 // ── CSV helpers ──────────────────────────────────────────────────────────────
 
@@ -330,7 +342,7 @@ async function run() {
   csvStream.write(csvRow(CSV_HEADERS));
 
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
     args: ['--lang=zh-TW'],
   });
 
@@ -373,10 +385,30 @@ async function run() {
         );
       });
       if (isCaptcha) {
-        console.warn(`  偵測到驗證碼，跳過此關鍵字`);
-        csvStream.write(csvRow([timestamp, keyword, '', '', '', '', '', '', '', '', '', '', '', '', '偵測到 CAPTCHA 驗證碼，跳過']));
-        await context.close();
-        continue;
+        console.warn(`\n  ⚠️  偵測到 CAPTCHA 驗證碼！`);
+        console.warn(`  請在瀏覽器視窗完成驗證後，回到終端機按 Enter 繼續。`);
+        console.warn(`  （若直接按 Enter 略過，此關鍵字將記錄為驗證碼未完成）\n`);
+        await waitForEnter('  完成驗證後請按 Enter：');
+
+        // 確認驗證是否已通過
+        const stillCaptcha = await page.evaluate(() => {
+          return (
+            !!document.querySelector('form#captcha-form') ||
+            !!document.querySelector('#recaptcha') ||
+            document.title.toLowerCase().includes('unusual traffic') ||
+            document.body.innerText.includes('我不是機器人') ||
+            document.body.innerText.includes("I'm not a robot")
+          );
+        }).catch(() => true);
+
+        if (stillCaptcha) {
+          console.warn(`  驗證碼仍未通過，跳過此關鍵字。`);
+          csvStream.write(csvRow([timestamp, keyword, '', '', '', '', '', '', '', '', '', '', '', '', 'CAPTCHA 驗證未完成，跳過']));
+          await context.close();
+          continue;
+        }
+        console.log(`  驗證通過，繼續處理…\n`);
+        await page.waitForTimeout(1500);
       }
 
       // ════════════════════════════════════════
